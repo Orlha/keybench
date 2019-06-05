@@ -15,6 +15,8 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 set (PRIMARY_SRC
 	${PROJECT_SOURCE_DIR}/src/hlp.cpp
+    ${PROJECT_SOURCE_DIR}/src/file.cpp
+    ${PROJECT_SOURCE_DIR}/src/control.cpp
     )
 
 set(CHAR_SRC

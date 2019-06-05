@@ -1,38 +1,64 @@
+/*#########################################
+ * Project: Keybench
+ *    File: main.cpp
+ *  Author: Sergey Moroz
+ * Created: 2019.06.06
+ #########################################*/
+
 #include <iostream>
-#include <filesystem>
-#include <fstream>
-#include <vector>
-#include <iterator>
+#include <map>
+#include <chrono>
+#include <thread>
 
 #include <hlp.h>
-//using namespace std;
+#include <file.h>
+#include <control.h>
+#include <share.h>
+using namespace std;
 
-typedef  uint8_t uint8;
-typedef uint16_t uint16;
-typedef uint32_t uint32;
-typedef uint64_t uint64;
-typedef   int8_t int8;
-typedef  int16_t int16;
-typedef  int32_t int32;
-typedef  int64_t int64;
+enum command {
+	QUIT,
+	AUTH,
+};
+
+static map<string,command> cmd_map = {
+	{"quit", QUIT},
+	{"q",    QUIT},
+	{"auth", AUTH},
+};
 
 int main()
-{
-	std::cout << "Hello, World;\n";
-	auto T = [] () {
-		std::cout << "Hello, Lambda;\n";
-	};
-	T();
-	std::filesystem::path path("/home/lynx/.keybench");
-	std::vector<uint8> vec;
-	std::ifstream file(path);
-	
-	std::copy(
-    std::istream_iterator<uint8>(file), 
-    std::istream_iterator<uint8>(), 
-    std::back_inserter(vec));
+{	
+	auto vec = File::Load("/home/lynx/.keybench");
+    cout << "File data: " << endl << vec;
 
-    Hlp::print("file", vec);
+	string str;
+    while(true) {	
+    	cout << "keybench: ";
+    	getline(cin, str);
+    	if(cin.eof()) {
+    		return 0;
+    	}
 
+	    auto cmd = cmd_map.find(str);
+	    if(cmd == cmd_map.end()) {
+	    	cout << "Invalid command;" << endl;
+	    	this_thread::sleep_for(chrono::milliseconds(1000));
+	    	continue;
+	    }
+	    switch(cmd->second) {
+	    	case QUIT: {
+	    		cout << "Shutdown requested;" << endl;
+	    		cout << "Exiting;" << endl;
+	    		return 0;
+	    	}
+	    	case AUTH: {
+	    		cout << "Authentication requested;" << endl;
+	    		cout << "Master password: ";
+	    		getline(cin, str);
+	    		if(cin.eof()) return 0;
+	    	}
+	    }
+    }
 	return 0;
 }
